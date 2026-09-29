@@ -6,8 +6,8 @@ import Link from 'next/link';
 // Cấu hình tài khoản nhận tiền VietQR của sân Tuyên Sơn
 const BANK_CONFIG = {
   BANK_ID: 'MB', // MB Bank
-  ACCOUNT_NO: '0905123456',
-  ACCOUNT_NAME: 'SAN BONG TUYEN SON',
+  ACCOUNT_NO: '0339228271',
+  ACCOUNT_NAME: 'DUONG THIEN DA',
 };
 
 const TIME_SLOTS = [
