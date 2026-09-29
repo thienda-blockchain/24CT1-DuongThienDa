@@ -20,6 +20,14 @@ export async function POST(request: Request) {
       paymentMethod = 'QR_TRANSFER',
     } = body;
 
+    // CHẶN BẢO MẬT API: Bắt buộc người dùng phải đăng nhập tài khoản mới được đặt sân
+    if (!userId) {
+      return NextResponse.json(
+        { message: 'Yêu cầu không hợp lệ. Vui lòng đăng nhập tài khoản trước khi đặt sân!' },
+        { status: 401 }
+      );
+    }
+
     if (
       !fieldId ||
       !subFieldId ||
@@ -70,11 +78,11 @@ export async function POST(request: Request) {
     const durationHours = 1.5;
     const totalPrice = Math.round(subField.pricePerHour * durationHours);
 
-    // Lưu đơn đặt sân kèm trạng thái thanh toán
+    // Lưu đơn đặt sân kèm trạng thái thanh toán và userId của người đặt
     const newBooking = await Booking.create({
       fieldId,
       subFieldId,
-      userId: userId || null,
+      userId,
       customerName,
       customerPhone,
       bookingDate,

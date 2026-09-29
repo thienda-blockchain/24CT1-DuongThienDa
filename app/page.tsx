@@ -33,6 +33,9 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
+  // Modal yêu cầu đăng nhập nếu chưa có tài khoản
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   // State Modal đặt sân & thanh toán
   const [selectedSlot, setSelectedSlot] = useState<{
     subField: any;
@@ -65,7 +68,7 @@ export default function HomePage() {
     }
   }, []);
 
- const fetchAvailability = async (date: string) => {
+  const fetchAvailability = async (date: string) => {
     setLoading(true);
     try {
       // Dùng cache: 'no-store' và timestamp chống cache tuyệt đối
@@ -88,7 +91,7 @@ export default function HomePage() {
     fetchAvailability(selectedDate);
   }, [selectedDate]);
 
- // Xác định trạng thái của khung giờ: AVAILABLE | PENDING | PAID
+  // Xác định trạng thái của khung giờ: AVAILABLE | PENDING | PAID
   const getSlotStatus = (subFieldId: string, slotStart: string) => {
     const matched = bookings.find(
       (b) =>
@@ -102,10 +105,14 @@ export default function HomePage() {
   };
 
   const handleOpenBooking = (subField: any, slot: any) => {
-    if (currentUser) {
-      setCustomerName(currentUser.name || '');
-      setCustomerPhone(currentUser.phone || customerPhone || '');
+    // CHẶN BẮT BUỘC: Nếu chưa đăng nhập thì bật modal thông báo yêu cầu đăng nhập
+    if (!currentUser) {
+      setShowAuthModal(true);
+      return;
     }
+
+    setCustomerName(currentUser.name || '');
+    setCustomerPhone(currentUser.phone || customerPhone || '');
     setSelectedSlot({ subField, slot });
     setModalStep('FORM');
     setCreatedBooking(null);
@@ -262,7 +269,7 @@ export default function HomePage() {
             <p className="text-xs text-emerald-100">Đặt Sân & Cập Nhật Lịch Trực Tiếp</p>
           </div>
           <div className="flex items-center space-x-3">
-           {currentUser ? (
+            {currentUser ? (
               <div className="flex items-center space-x-3">
                 <span className="text-xs sm:text-sm font-medium">
                   Chào, <strong className="font-bold underline">{currentUser.name}</strong>
@@ -471,6 +478,42 @@ export default function HomePage() {
         )}
       </main>
 
+      {/* MODAL CẢNH BÁO YÊU CẦU ĐĂNG NHẬP / ĐĂNG KÝ */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 text-center animate-fadeIn">
+            <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+              🔒
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Yêu cầu Đăng nhập</h3>
+            <p className="text-xs text-gray-600 mb-5 leading-relaxed">
+              Bạn cần đăng nhập hoặc tạo tài khoản để có thể đặt sân.
+            </p>
+            <div className="flex flex-col space-y-2">
+              <Link
+                href="/login"
+                className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow-sm"
+              >
+                Đăng nhập ngay
+              </Link>
+              <Link
+                href="/register"
+                className="w-full py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-xl text-xs transition"
+              >
+                Tạo tài khoản mới
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowAuthModal(false)}
+                className="pt-2 text-xs text-gray-400 hover:text-gray-600 transition"
+              >
+                Để sau, tôi muốn xem lịch tiếp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL ĐẶT SÂN & THANH TOÁN */}
       {selectedSlot && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
@@ -478,7 +521,7 @@ export default function HomePage() {
             {modalStep === 'FORM' ? (
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  Xác nhận đặt sân thi đấu
+                  Xác nhận đặt sân
                 </h3>
                 <div className="bg-gray-50 rounded-xl p-3 mb-4 text-xs space-y-1 text-gray-700">
                   <p><span className="font-semibold">Sân:</span> {selectedSlot.subField.name}</p>
