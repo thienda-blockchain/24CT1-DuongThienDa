@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
-import User from '@/models/User';
+import User from '@/lib/models/User';
 import bcrypt from 'bcryptjs';
 
 // Định nghĩa hàm xử lý phương thức HTTP POST
