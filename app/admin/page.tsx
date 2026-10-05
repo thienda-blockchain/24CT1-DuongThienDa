@@ -220,7 +220,7 @@ export default function AdminPage() {
             </span>
             <div>
               <h1 className="text-lg font-bold">Bảng Điều Khiển Lễ Tân - Sân Tuyên Sơn</h1>
-              <p className="text-xs text-slate-400">Nhân viên trực: {currentUser?.name}</p>
+              <p className="text-xs text-slate-400">Trực: {currentUser?.name}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">

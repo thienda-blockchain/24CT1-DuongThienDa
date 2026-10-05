@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import connectToDatabase from '@/lib/mongodb';
-import Booking from '@/models/Booking';
+import Booking from '@/lib/models/Booking';
 
 export async function PATCH(
   request: Request,

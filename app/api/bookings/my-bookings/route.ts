@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
-import Booking from '@/models/Booking';
-import Field from '@/models/Field';
+import Booking from '@/lib/models/Booking';
+import Field from '@/lib/models/Field';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

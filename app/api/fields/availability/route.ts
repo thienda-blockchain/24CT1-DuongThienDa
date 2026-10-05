@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
-import Field from '@/models/Field';
-import Booking from '@/models/Booking';
+import Field from '@/lib/models/Field';
+import Booking from '@/lib/models/Booking';
 
 // Ép Next.js không bao giờ cache kết quả API này
 export const dynamic = 'force-dynamic';

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
-import User from '@/models/User';
-import Field from '@/models/Field';
+import User from '@/lib/models/User';
+import Field from '@/lib/models/Field';
 import bcrypt from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
