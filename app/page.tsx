@@ -527,7 +527,7 @@ export default function HomePage() {
                   <p><span className="font-semibold">Sân:</span> {selectedSlot.subField.name}</p>
                   <p><span className="font-semibold">Ngày đá:</span> {selectedDate}</p>
                   <p><span className="font-semibold">Khung giờ:</span> {selectedSlot.slot.label}</p>
-                  <p><span className="font-semibold">Tiền sân:</span> <span className="text-emerald-700 font-bold">{(selectedSlot.subField.pricePerHour * 1.5).toLocaleString('vi-VN')} đ</span></p>
+                  <p><span className="font-semibold">Tiền sân:</span> <span className="text-emerald-700 font-bold">{(selectedSlot.subField.pricePerHour * 1.0).toLocaleString('vi-VN')} đ</span></p>
                 </div>
 
                 {bookingMessage && (
