@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const durationHours = 1.5;
+    const durationHours = 1.0;
     const totalPrice = Math.round(subField.pricePerHour * durationHours);
 
     // Lưu đơn đặt sân kèm trạng thái thanh toán và userId của người đặt
