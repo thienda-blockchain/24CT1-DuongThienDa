@@ -4,10 +4,9 @@ import User from '@/lib/models/User';
 import bcrypt from 'bcryptjs';
 
 // Định nghĩa hàm xử lý phương thức HTTP POST
-// Chỉ nhận data được gửi lên 
 export async function POST(request: Request) {
   try {
-    // 1. GỌi hàm connectToDatabase trong lib/mongodb.ts để giao tiếp với MongoDB
+    // 1. Gọi hàm connectToDatabase trong lib/mongodb.ts để giao tiếp với MongoDB
     await connectToDatabase();
 
     // 2. Đọc dữ liệu JSON người dùng gửi lên
@@ -22,31 +21,49 @@ export async function POST(request: Request) {
       );
     }
 
-    // 3. Kiểm tra dữ liệu bắt buộc (Validation)
-    if (!name || !email || !password) {
+    // --- Kiểm tra định dạng Email chuẩn ---
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { message: 'Vui lòng điền đầy đủ họ tên, email và mật khẩu' },
+        { message: 'Định dạng email không hợp lệ (Ví dụ: name@example.com)' },
         { status: 400 }
       );
     }
 
-    // --- BỔ SUNG: Kiểm tra định dạng Email chuẩn ---
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { message: 'Định dạng email không hợp lệ (Ví dụ hợp lệ: name@example.com)' },
-        { status: 400 } // Trả về lỗi 400 Bad Request
-      );
+    // --- Kiểm tra định dạng Số điện thoại Việt Nam (nếu có nhập) ---
+    if (phone) {
+      const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+      if (!phoneRegex.test(phone)) {
+        return NextResponse.json(
+          { message: 'Số điện thoại không đúng định dạng' },
+          { status: 400 }
+        );
+      }
     }
-    // ------------------------------------------------
 
-    // 4. Kiểm tra xem email này đã có ai dùng chưa
-    const existingUser = await User.findOne({ email });
+    // 4. Kiểm tra xem Email hoặc Số điện thoại đã được đăng ký chưa
+    const queryConditions: any[] = [{ email }];
+    if (phone) {
+      queryConditions.push({ phone });
+    }
+
+    const existingUser = await User.findOne({
+      $or: queryConditions,
+    });
+
     if (existingUser) {
-      return NextResponse.json(
-        { message: `Email ${email} đã tồn tại trong hệ thống` },
-        { status: 409 } // Lỗi 409: Conflict (Trùng lặp dữ liệu)
-      );
+      if (existingUser.email === email) {
+        return NextResponse.json(
+          { message: `Email ${email} đã tồn tại trong hệ thống` },
+          { status: 409 } // Lỗi 409: Conflict (Trùng lặp dữ liệu)
+        );
+      }
+      if (phone && existingUser.phone === phone) {
+        return NextResponse.json(
+          { message: `Số điện thoại ${phone} đã được đăng ký trước đó` },
+          { status: 409 }
+        );
+      }
     }
 
     // 5. Băm mật khẩu (Hash Password) để bảo mật
@@ -73,7 +90,7 @@ export async function POST(request: Request) {
           role: newUser.role,
         },
       },
-      { status: 201 } // Mã 201: Created (Tạo mới thành công)
+      { status: 201 } // Mã 201: Created
     );
   } catch (error: any) {
     console.error('Lỗi khi gọi API Register:', error);
