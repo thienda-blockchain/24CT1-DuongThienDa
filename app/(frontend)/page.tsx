@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 // Cấu hình tài khoản nhận tiền VietQR của sân Tuyên Sơn
 const BANK_CONFIG = {
@@ -135,7 +136,7 @@ export default function HomePage() {
     if (!selectedSlot || !fieldData) return;
 
     if (!customerName.trim() || !customerPhone.trim()) {
-      setBookingMessage({ type: 'error', text: 'Vui lòng nhập họ tên và số điện thoại liên hệ!' });
+      toast.error('Vui lòng nhập đầy đủ họ tên và số điện thoại!');
       return;
     }
 
@@ -162,8 +163,11 @@ export default function HomePage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Đặt sân không thành công');
-      }
+      toast.error(data.message || 'Đặt sân thất bại, vui lòng thử lại!');
+      return;
+    }
+    toast.success('Đặt sân thành công! Vui lòng quét mã QR thanh toán.');
+    setCreatedBooking(data.booking);
 
       setCreatedBooking(data.booking);
       setModalStep('QR');
@@ -327,6 +331,7 @@ export default function HomePage() {
             </label>
             <input
               type="date"
+              min={new Date().toISOString().split('T')[0]}
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"

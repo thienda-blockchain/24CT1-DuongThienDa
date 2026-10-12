@@ -8,6 +8,14 @@ export async function POST(request: Request) {
     await connectToDatabase();
 
     const body = await request.json();
+    // Chặn đặt sân cho ngày hoặc giờ trong quá khứ
+    const bookingStartDateTime = new Date(`${body.bookingDate}T${body.startTime}`);
+    if (bookingStartDateTime < new Date()) {
+      return NextResponse.json(
+        { message: 'Không thể đặt sân!' },
+        { status: 400 }
+      );
+    }
     const {
       fieldId,
       subFieldId,
