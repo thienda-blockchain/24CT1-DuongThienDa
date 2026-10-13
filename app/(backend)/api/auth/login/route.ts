@@ -25,12 +25,12 @@ export async function POST(request: Request) {
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json(
-        { message: 'Email hoặc mật khẩu không chính xác' },
+        { message: 'Tài khoản chưa được đăng ký' },
         { status: 401 } // 401 Unauthorized
       );
     }
 
-    // 5. So khớp mật khẩu nhập vào với mật khẩu đã băm (hash)
+    // 5. So sánh mật khẩu 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return NextResponse.json(
