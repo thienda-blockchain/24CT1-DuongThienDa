@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return NextResponse.json(
-        { message: 'Email hoặc mật khẩu không chính xác' },
+        { message: 'Mật khẩu không chính xác' },
         { status: 401 }
       );
     }
