@@ -11,7 +11,6 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -22,9 +21,9 @@ export default function RegisterPage() {
   // 3. Tạo biến cờ xem form có đang trong quá trình gửi đi hay không (để khóa nút bấm)
   const [loading, setLoading] = useState(false);
 
-  // Hàm này sẽ tự động được gọi khi người dùng nhấn phím Enter hoặc click nút Submit
+  // Hàm tự động được gọi khi người dùng nhấn phím Enter hoặc click nút Submit
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // CỰC KỲ QUAN TRỌNG: Chặn trình duyệt tự reload lại trang theo kiểu web cổ điển
+    e.preventDefault(); //Chặn trình duyệt tự reload lại trang theo kiểu web cổ điển
     setError(''); // Xóa thông báo lỗi cũ nếu có
 
     // . Kiểm tra định dạng email
@@ -50,14 +49,13 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Bước 3: Gửi dữ liệu sang API Backend mà chúng ta đã test bằng cURL lúc nãy
+      // Bước 3: Gửi dữ liệu sang API Backend mà đã test bằng cURL 
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: formData.phone,
           password: formData.password,
         }),
       });
@@ -69,6 +67,7 @@ export default function RegisterPage() {
         throw new Error(data.message || 'Đăng ký thất bại!');
       }
 
+      
       // Nếu thành công (mã 201)
       alert('Đăng ký tài khoản thành công!');
       router.push('/login'); // Chuyển ngay sang trang đăng nhập
@@ -136,17 +135,6 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Ô nhập Số điện thoại */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
-            <input
-              type="tel"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 text-black"
-              placeholder="0905xxxxxx"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            />
-          </div>
 
           {/* Ô nhập Mật khẩu */}
           <div>

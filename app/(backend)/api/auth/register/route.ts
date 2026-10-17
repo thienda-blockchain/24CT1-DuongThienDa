@@ -6,12 +6,12 @@ import bcrypt from 'bcryptjs';
 // Định nghĩa hàm xử lý phương thức HTTP POST
 export async function POST(request: Request) {
   try {
-    // 1. Gọi hàm connectToDatabase trong lib/mongodb.ts để giao tiếp với MongoDB
+    // 1. Kết nối cơ sở dữ liệu MongoDB Atlas
     await connectToDatabase();
 
-    // 2. Đọc dữ liệu JSON người dùng gửi lên
+    // 2. Đọc dữ liệu JSON gửi lên từ Client (đã loại bỏ phone)
     const body = await request.json();
-    const { name, email, password, phone } = body;
+    const { name, email, password } = body;
 
     // 3. Kiểm tra dữ liệu bắt buộc (Validation)
     if (!name || !email || !password) {
@@ -30,43 +30,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // --- Kiểm tra định dạng Số điện thoại Việt Nam (nếu có nhập) ---
-    if (phone) {
-      const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
-      if (!phoneRegex.test(phone)) {
-        return NextResponse.json(
-          { message: 'Số điện thoại không đúng định dạng' },
-          { status: 400 }
-        );
-      }
-    }
-
-    // 4. Kiểm tra xem Email hoặc Số điện thoại đã được đăng ký chưa
-    const queryConditions: any[] = [{ email }];
-    if (phone) {
-      queryConditions.push({ phone });
-    }
-
-    const existingUser = await User.findOne({
-      $or: queryConditions,
-    });
+    // 4. Kiểm tra xem Email đã được đăng ký trong CSDL chưa
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      if (existingUser.email === email) {
-        return NextResponse.json(
-          { message: `Email ${email} đã tồn tại trong hệ thống` },
-          { status: 409 } // Lỗi 409: Conflict (Trùng lặp dữ liệu)
-        );
-      }
-      if (phone && existingUser.phone === phone) {
-        return NextResponse.json(
-          { message: `Số điện thoại ${phone} đã được đăng ký trước đó` },
-          { status: 409 }
-        );
-      }
+      return NextResponse.json(
+        { message: `Email ${email} đã tồn tại` },
+        { status: 409 } // Lỗi 409: Conflict (Trùng lặp dữ liệu)
+      );
     }
 
-    // 5. Băm mật khẩu (Hash Password) để bảo mật
+    // 5. Băm mật khẩu (Hash Password) bằng bcrypt
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -75,11 +49,10 @@ export async function POST(request: Request) {
       name,
       email,
       password: hashedPassword,
-      phone: phone || '',
       role: 'PLAYER', // Đăng ký mới mặc định luôn là Cầu thủ
     });
 
-    // 7. Trả về kết quả thành công (Bảo mật: không bao giờ trả lại password)
+    // 7. Trả về kết quả thành công (Bảo mật: không trả lại password)
     return NextResponse.json(
       {
         message: 'Đăng ký tài khoản thành công',
