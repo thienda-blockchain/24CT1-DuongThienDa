@@ -90,6 +90,12 @@ export default function RegisterPage() {
         
         {/* Tiêu đề trang */}
         <div className="text-center">
+          <img
+            src="/logo.png"
+            alt="Logo Sân Bóng Tuyên Sơn"
+            className="w-24 h-24 object-contain mx-auto mb-3"
+          />
+
           <h2 className="text-3xl font-extrabold text-gray-900">
             Sân Bóng Tuyên Sơn
           </h2>

@@ -69,6 +69,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-xl shadow-md border border-gray-100">
         <div className="text-center">
+
+          <img
+            src="/logo.png"
+            alt="Logo Sân Bóng Tuyên Sơn"
+            className="w-24 h-24 object-contain mx-auto mb-3"
+          />
+
           <h2 className="text-3xl font-extrabold text-gray-900">
             Sân Bóng Tuyên Sơn
           </h2>
